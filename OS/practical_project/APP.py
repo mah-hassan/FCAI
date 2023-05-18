@@ -1,25 +1,19 @@
 import sjf
 import FCFS
+import Round_Robin
 import tkinter as tk
 
-
-class Process():
-    p_id = 0
-    at = 0
-    bt = 0
-    rt = 0
-    wt = 0
-
+class Process:
     def __init__(self, p_id, at, bt):
         self.p_id = p_id
         self.at = at
         self.bt = bt
-        self.rt = bt
+        self.rt = bt 
+        self.wt = 0
+        self.completion_time = 0 
         self.wt = 0
 
-
 global processes
-
 
 def create_processes():
     processes = []
@@ -29,7 +23,6 @@ def create_processes():
         bt = int(burst_times[i].get())
         processes.append(Process(p_id, at, bt))
     return processes
-
 
 def generate_inputs():
     for widget in input_frame.winfo_children():
@@ -95,43 +88,56 @@ def show_sjfPreemptive_output(output):
 def show_sjfNonPreemptive_output(output):
     show_output(output, "SJF Non-Preemptive")
 
+def show_RoundRobin_output(output):
+    show_output(output, "Round Robin")
 
-# create the main window
 root = tk.Tk()
 root.title("CPU Scheduler")
+root.configure(bg="white",padx=100,pady=20)
 
-# create the input fields
-num_of_processes_label = tk.Label(root, text="Number of processes:")
-num_of_processes_label.grid(row=0, column=0, padx=5, pady=5)
+title_label = tk.Label(root,text="Welcome to CPU Scheduler",font=("Arial",18),bg="white")
+title_label.pack(pady=10)
+
+input_button_frame = tk.Frame(root,bg="white")
+input_button_frame.pack()
+
+num_of_processes_label = tk.Label(input_button_frame,text="Number of processes:",justify=tk.RIGHT,bg="white")
+num_of_processes_label.grid(row=0,column=0,padx=10,pady=10)
 num_of_processes = tk.IntVar(value=3)
-num_of_processes_entry = tk.Entry(root, textvariable=num_of_processes)
-num_of_processes_entry.grid(row=0, column=1, padx=5, pady=5)
+num_of_processes_entry = tk.Entry(input_button_frame,textvariable=num_of_processes)
+num_of_processes_entry.grid(row=0,column=1,padx=10,pady=10)
+generate_button = tk.Button(input_button_frame,text="Enter inputs",command=generate_inputs,bg="#00bfff",fg="white",relief=tk.RAISED)
+generate_button.grid(row=0,column=2,padx=10,pady=10)
 
-generate_button = tk.Button(root, text="Enter inputs", command=generate_inputs)
-generate_button.grid(row=0, column=2, padx=5, pady=5)
+input_frame = tk.Frame(root,bg="white")
+input_frame.pack()
 
-input_frame = tk.Frame(root)
-input_frame.grid(row=1, column=0, columnspan=3)
+algorithm_frame = tk.LabelFrame(root,text="Choose an algorithm",bg="white",borderwidth=5,relief=tk.GROOVE)
+algorithm_frame.pack(pady=(20,10))
 
-# create the buttons
-run_non_preempetive_button = tk.Button(root, text="Run sjf_non_preempetive", command=lambda: show_sjfNonPreemptive_output(
-    sjf.sjf_non_preempetive(create_processes())))
-run_non_preempetive_button.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
+run_non_preempetive_button = tk.Button(algorithm_frame,text="Run sjf_non_preempetive",command=lambda: show_sjfNonPreemptive_output(
+ sjf.sjf_non_preempetive(create_processes())),font=("Arial",12),bg="#00bfff",fg="white",relief=tk.RAISED)
+run_non_preempetive_button.pack(fill=tk.X,padx=(10),pady=(10))
 
-run_preempetive_button = tk.Button(root, text="Run sjf_preempetive", command=lambda: show_sjfPreemptive_output(
-    sjf.sjf_preempetive(create_processes())))
-run_preempetive_button.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
+run_preempetive_button = tk.Button(algorithm_frame,text="Run sjf_preempetive",command=lambda: show_sjfPreemptive_output(
+ sjf.sjf_preempetive(create_processes())),font=("Arial",12),bg="#00bfff",fg="white",relief=tk.RAISED)
+run_preempetive_button.pack(fill=tk.X,padx=(10),pady=(10))
 
-run_fcfs_button = tk.Button(root, text="Run FCFS", command=lambda: show_FCFS_output(
-    FCFS.fcfs(create_processes())))
-run_fcfs_button.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+run_fcfs_button = tk.Button(algorithm_frame,text="Run FCFS",command=lambda: show_FCFS_output(
+ FCFS.fcfs(create_processes())),font=("Arial",12),bg="#00bfff",fg="white",relief=tk.RAISED)
+run_fcfs_button.pack(fill=tk.X,padx=(10),pady=(10))
+quantum_label = tk.Label(root,text="Quantum:",justify=tk.RIGHT,bg="white")
+quantum_label.pack(pady=(20,10))
+quantum_input = tk.IntVar(value=4)
+quantum_entry = tk.Entry(root,textvariable=quantum_input)
+quantum_entry.pack(pady=(0,10))
+run_round_robin_button = tk.Button(algorithm_frame, text='Round Robin', command=lambda: show_RoundRobin_output(Round_Robin.round_robin(create_processes(), quantum_input.get())), font=("Arial", 12), bg="#00bfff", fg="white", relief=tk.RAISED)
+run_round_robin_button.pack(fill=tk.X,padx=(10),pady=(10))
 
-# create the output frame
-output_frame = tk.LabelFrame(root, text="Output")
-output_frame.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
+output_frame = tk.LabelFrame(root,text="Output",bg="white",borderwidth=5,relief=tk.GROOVE)
+output_frame.pack(pady=(20))
 
-# create the output text widget
-output_text = tk.Text(output_frame, width=50, height=10)
+output_text = tk.Text(output_frame,width=50,height=10)
 output_text.pack()
 
 root.mainloop()
